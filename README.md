@@ -2,7 +2,7 @@
 
 An end-to-end data project that takes a raw national health facility file and turns it into a cleaned relational database, a set of SQL measures, and an interactive Power BI dashboard on facility readiness in Bauchi State, Nigeria.
 
-![Dashboard preview](images/Bauchi State Facility Readiness_page-0001.jpg)
+![Dashboard preview](Images/Bauchi State Facility Readiness_page-0001.jpg)
 
 ## Important note on the data
 
