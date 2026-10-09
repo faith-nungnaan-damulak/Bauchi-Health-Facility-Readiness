@@ -2,8 +2,7 @@
 
 An end-to-end data project that takes a raw national health facility file and turns it into a cleaned relational database, a set of SQL measures, and an interactive Power BI dashboard on facility readiness in Bauchi State, Nigeria.
 
-![Dashboard preview](Images/Bauchi State Facility Readiness_page-0001.jpg)
-
+![Bauchi State Facility Readiness Dashboard](Bauchi%20State%20Facility%20Readiness_page-001.jpg)
 ## Important note on the data
 
 - **Facility records are real.** They come from the GRID3 Nigeria health facility dataset (1,787 facilities in Bauchi State).
