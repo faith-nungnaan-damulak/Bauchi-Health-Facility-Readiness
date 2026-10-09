@@ -4,8 +4,9 @@ An end-to-end data project that takes a raw national health facility file and tu
 
 ## Dashboard Preview
 
-<img src="./images/Bauchi%20State%20Facility%20Readiness_page-001.jpg" alt="Bauchi State Facility Readiness Dashboard" width="100%"/>
-## Important note on the data
+## Dashboard Preview
+
+![Bauchi State Facility Readiness Dashboard](./images/Bauchi%20State%20Facility%20Readiness_page-0001.jpg) ## Important note on the data
 
 - **Facility records are real.** They come from the GRID3 Nigeria health facility dataset (1,787 facilities in Bauchi State).
 - **Monitoring results are simulated.** Real facility-level monitoring records are not public, so the visit and indicator data were generated for portfolio demonstration: 304 facilities, 3 visit rounds (July to September 2026) and 18 SARA-style readiness indicators. Findings below describe the simulated data and say nothing about real facilities.
