@@ -1,0 +1,103 @@
+=====================================================
+STAGE 4C: POWER BI DAX  (paste each block exactly)
+Table names used: dim_facility, dim_indicator, monitor,
+monitoring_visit, visit_indicator_result, dim_date
+Rename the imported views to these names first.
+=====================================================
+
+---------- A. DATE TABLE ----------
+Modeling > New table, paste:
+
+dim_date =
+ADDCOLUMNS(
+    CALENDAR(DATE(2026,7,1), DATE(2026,9,30)),
+    "Month", FORMAT([Date], "MMM yyyy"),
+    "Month No", MONTH([Date])
+)
+
+Then select the Month column > Column tools > Sort by column > Month No.
+
+
+---------- B. CALCULATED COLUMNS (on the monitoring_visit table) ----------
+Right-click monitoring_visit > New column. Create these 5, in this order:
+
+Visit Score =
+DIVIDE(
+    CALCULATE(SUM(visit_indicator_result[is_present])),
+    CALCULATE(COUNTROWS(visit_indicator_result))
+)
+
+Readiness Band =
+IF(monitoring_visit[Visit Score] >= 0.75, "Ready",
+   IF(monitoring_visit[Visit Score] >= 0.5, "Partly ready", "Not ready"))
+
+Stockout Count =
+COALESCE(
+    CALCULATE(
+        COUNTROWS(visit_indicator_result),
+        visit_indicator_result[is_present] = 0,
+        dim_indicator[domain_name] = "Essential Medicines"
+    ),
+    0
+)
+
+Has Stockout =
+IF(monitoring_visit[Stockout Count] > 0, 1, 0)
+
+Is Latest Visit =
+IF(
+    monitoring_visit[visit_round] =
+        CALCULATE(
+            MAX(monitoring_visit[visit_round]),
+            ALLEXCEPT(monitoring_visit, monitoring_visit[facility_id])
+        ),
+    1, 0
+)
+
+
+---------- C. MEASURES ----------
+Right-click monitoring_visit > New measure. Format as noted.
+
+Total Facilities = COUNTROWS(dim_facility)                       -- whole number
+
+Monitored Facilities = DISTINCTCOUNT(monitoring_visit[facility_id])   -- whole number
+
+Coverage % = DIVIDE([Monitored Facilities], [Total Facilities])       -- percentage, 1 decimal
+
+Total Visits = COUNTROWS(monitoring_visit)                       -- whole number
+
+Items Checked = COUNTROWS(visit_indicator_result)                -- whole number
+
+Items Present = SUM(visit_indicator_result[is_present])          -- whole number
+
+Readiness Score % = DIVIDE([Items Present], [Items Checked])     -- percentage, 1 decimal
+
+Latest Readiness % =
+CALCULATE([Readiness Score %], monitoring_visit[Is Latest Visit] = 1)   -- percentage, 1 decimal
+
+First Round Readiness % =
+CALCULATE([Readiness Score %], monitoring_visit[visit_round] = 1)       -- percentage, 1 decimal
+
+Score Change (pts) =
+([Latest Readiness %] - [First Round Readiness %]) * 100                -- decimal, 1 decimal
+
+Ready Facilities % =
+DIVIDE(
+    CALCULATE(DISTINCTCOUNT(monitoring_visit[facility_id]),
+              monitoring_visit[Is Latest Visit] = 1,
+              monitoring_visit[Readiness Band] = "Ready"),
+    CALCULATE(DISTINCTCOUNT(monitoring_visit[facility_id]),
+              monitoring_visit[Is Latest Visit] = 1)
+)                                                                       -- percentage, 1 decimal
+
+Stockout Rate % =
+DIVIDE(
+    CALCULATE(DISTINCTCOUNT(monitoring_visit[facility_id]),
+              monitoring_visit[Is Latest Visit] = 1,
+              monitoring_visit[Has Stockout] = 1),
+    CALCULATE(DISTINCTCOUNT(monitoring_visit[facility_id]),
+              monitoring_visit[Is Latest Visit] = 1)
+)                                                                       -- percentage, 1 decimal
+
+Facilities With Valid Coordinates =
+CALCULATE(COUNTROWS(dim_facility), dim_facility[coordinate_status] = "Valid")   -- whole number
